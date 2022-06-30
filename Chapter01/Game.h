@@ -52,4 +52,8 @@ private:
 	Vector2 mBallPos;
 	// Velocity of ball
 	Vector2 mBallVel;
+    
+    // Pong Player 2 member variables
+    int mPaddleDir2;
+    Vector2 mPaddlePos2;
 };

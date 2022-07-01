@@ -18,12 +18,45 @@ Ship::Ship(Game* game)
 	// Create an animated sprite component
 	AnimSpriteComponent* asc = new AnimSpriteComponent(this);
 	std::vector<SDL_Texture*> anims = {
-		game->GetTexture("Assets/Ship01.png"),
-		game->GetTexture("Assets/Ship02.png"),
-		game->GetTexture("Assets/Ship03.png"),
-		game->GetTexture("Assets/Ship04.png"),
+		game->GetTexture("Assets/Character01.png"),
+		game->GetTexture("Assets/Character02.png"),
+        game->GetTexture("Assets/Character03.png"),
+        game->GetTexture("Assets/Character04.png"),
+        game->GetTexture("Assets/Character05.png"),
+        game->GetTexture("Assets/Character06.png"),
+        game->GetTexture("Assets/Character07.png"),
+        game->GetTexture("Assets/Character08.png"),
+        game->GetTexture("Assets/Character09.png"),
+        game->GetTexture("Assets/Character10.png"),
+        game->GetTexture("Assets/Character11.png"),
+        game->GetTexture("Assets/Character12.png"),
+        game->GetTexture("Assets/Character13.png"),
+        game->GetTexture("Assets/Character14.png"),
+        game->GetTexture("Assets/Character15.png"),
+        game->GetTexture("Assets/Character16.png"),
+        game->GetTexture("Assets/Character17.png"),
+        game->GetTexture("Assets/Character18.png"),
 	};
-	asc->SetAnimTextures(anims);
+    
+    // Create the ranges for each animation
+    std::vector<int> run = {1,2,3,4,5,6};
+    std::vector<int> jump = {7,8,9,10,11,12,13,14,15};
+    std::vector<int> punch = {16,17,18};
+    
+    // Create the map of animation ranges
+    std::unordered_map<std::string, std::vector<int>> ranges;
+    ranges.emplace("run", run);
+    ranges.emplace("jump", jump);
+    ranges.emplace("punch", punch);
+    
+    // Determine which animations loop
+    std::unordered_map<std::string, bool> looping;
+    looping.emplace("run", true);
+    looping.emplace("jump", false);
+    looping.emplace("punch", false);
+    
+    // Parameters: animations, ranges, looping, default animation, and starting animation
+	asc->SetAnimTextures(anims, ranges, looping, "run", "jump");
 }
 
 void Ship::UpdateActor(float deltaTime)

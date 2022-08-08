@@ -13,6 +13,7 @@
 #include "SpriteComponent.h"
 #include "Ship.h"
 #include "BGSpriteComponent.h"
+#include "TileMapComponent.h"
 
 Game::Game()
 :mWindow(nullptr)
@@ -179,6 +180,17 @@ void Game::LoadData()
 	};
 	bg->SetBGTextures(bgtexs);
 	bg->SetScrollSpeed(-200.0f);
+    
+    // Load the Tile Maps onto the background actor
+    TileMapComponent* map1 = new TileMapComponent(temp, 90);
+    map1->SetTexture(GetTexture("Assets/Tiles.png"));
+    map1->LoadTileMap("Assets/MapLayer1.csv");
+    TileMapComponent* map2 = new TileMapComponent(temp, 80);
+    map2->SetTexture(GetTexture("Assets/Tiles.png"));
+    map2->LoadTileMap("Assets/MapLayer2.csv");
+    TileMapComponent* map3 = new TileMapComponent(temp, 70);
+    map3->SetTexture(GetTexture("Assets/Tiles.png"));
+    map3->LoadTileMap("Assets/MapLayer3.csv");
 }
 
 void Game::UnloadData()

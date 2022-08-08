@@ -9,12 +9,15 @@
 #include "Ship.h"
 #include "SpriteComponent.h"
 #include "InputComponent.h"
+#include "CircleComponent.h"
 #include "Game.h"
 #include "Laser.h"
+#include "Asteroid.h"
 
 Ship::Ship(Game* game)
 	:Actor(game)
 	,mLaserCooldown(0.0f)
+    ,mCircle(nullptr)
 {
 	// Create a sprite component
 	SpriteComponent* sc = new SpriteComponent(this, 150);
@@ -28,11 +31,40 @@ Ship::Ship(Game* game)
 	ic->SetCounterClockwiseKey(SDL_SCANCODE_D);
 	ic->SetMaxForwardSpeed(300.0f);
 	ic->SetMaxAngularSpeed(Math::TwoPi);
+
+    // Create a circle component for collision
+    mCircle = new CircleComponent(this);
+    mCircle->SetRadius(32.0f);
+    
 }
 
 void Ship::UpdateActor(float deltaTime)
 {
 	mLaserCooldown -= deltaTime;
+    mRespawnCooldown -= deltaTime;
+    
+    if (mRespawning && mRespawnCooldown < 0)
+    {
+        SetState(EActive);
+        SetPosition(Vector2(512.0f, 384.0f));
+        SetRotation(0.0f);
+        mRespawning = false;
+    }
+    else if (!mRespawning && mRespawnCooldown < 0)
+    {
+        // Check if we intersect with an asteroid
+        for (auto ast : GetGame()->GetAsteroids())
+        {
+            if (Intersect(*mCircle, *(ast->GetCircle())))
+            {
+                // Make the ship disappear for 2 seconds
+                mRespawning = true;
+                mRespawnCooldown = 2.0f;
+                SetState(EPaused);
+                break;
+            }
+        }
+    }
 }
 
 void Ship::ActorInput(const uint8_t* keyState)

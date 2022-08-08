@@ -17,4 +17,7 @@ public:
 	void ActorInput(const uint8_t* keyState) override;
 private:
 	float mLaserCooldown;
+    float mRespawnCooldown;
+    bool mRespawning;
+    class CircleComponent* mCircle;
 };

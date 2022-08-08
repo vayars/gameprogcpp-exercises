@@ -27,7 +27,8 @@ SpriteComponent::~SpriteComponent()
 
 void SpriteComponent::Draw(SDL_Renderer* renderer)
 {
-	if (mTexture)
+    // If there is a valid texture and the actor is active:
+	if (mTexture && mOwner->GetState()==Actor::EActive)
 	{
 		SDL_Rect r;
 		// Scale the width/height by owner's scale

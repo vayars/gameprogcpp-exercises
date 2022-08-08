@@ -39,6 +39,10 @@ void Actor::Update(float deltaTime)
 		UpdateComponents(deltaTime);
 		UpdateActor(deltaTime);
 	}
+    if (mState == EPaused) // If the actor is paused, don't update the components
+    {
+        UpdateActor(deltaTime);
+    }
 }
 
 void Actor::UpdateComponents(float deltaTime)

@@ -20,4 +20,5 @@ private:
     float mRespawnCooldown;
     bool mRespawning;
     class CircleComponent* mCircle;
+    class InputComponent* mIC;
 };

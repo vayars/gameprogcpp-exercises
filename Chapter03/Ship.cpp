@@ -24,13 +24,13 @@ Ship::Ship(Game* game)
 	sc->SetTexture(game->GetTexture("Assets/Ship.png"));
 
 	// Create an input component and set keys/speed
-	InputComponent* ic = new InputComponent(this);
-	ic->SetForwardKey(SDL_SCANCODE_W);
-	ic->SetBackKey(SDL_SCANCODE_S);
-	ic->SetClockwiseKey(SDL_SCANCODE_A);
-	ic->SetCounterClockwiseKey(SDL_SCANCODE_D);
-	ic->SetMaxForwardSpeed(300.0f);
-	ic->SetMaxAngularSpeed(Math::TwoPi);
+	mIC = new InputComponent(this);
+	mIC->SetForwardKey(SDL_SCANCODE_W);
+	mIC->SetBackKey(SDL_SCANCODE_S);
+	mIC->SetClockwiseKey(SDL_SCANCODE_A);
+	mIC->SetCounterClockwiseKey(SDL_SCANCODE_D);
+	mIC->SetMaxForwardSpeed(300.0f);
+	mIC->SetMaxAngularSpeed(Math::TwoPi);
 
     // Create a circle component for collision
     mCircle = new CircleComponent(this);
@@ -48,6 +48,7 @@ void Ship::UpdateActor(float deltaTime)
         SetState(EActive);
         SetPosition(Vector2(512.0f, 384.0f));
         SetRotation(0.0f);
+        mIC->SetVelocity(0.0f);
         mRespawning = false;
     }
     else if (!mRespawning && mRespawnCooldown < 0)

@@ -8,6 +8,8 @@
 
 #include "Tower.h"
 #include "SpriteComponent.h"
+#include "AIComponent.h"
+#include "AIState.h"
 #include "MoveComponent.h"
 #include "Game.h"
 #include "Enemy.h"
@@ -18,18 +20,23 @@ Tower::Tower(class Game* game)
 {
 	SpriteComponent* sc = new SpriteComponent(this, 200);
 	sc->SetTexture(game->GetTexture("Assets/Tower.png"));
+    
+    AIComponent* aic = new AIComponent(this);
+    aic->RegisterState(new AIPatrol(aic));
+    aic->RegisterState(new AIAttack(aic));
+    aic->ChangeState("Patrol");
 	
 	mMove = new MoveComponent(this);
 	//mMove->SetAngularSpeed(Math::Pi);
 	
-	mNextAttack = AttackTime;
+	//mNextAttack = AttackTime;
 }
 
 void Tower::UpdateActor(float deltaTime)
 {
 	Actor::UpdateActor(deltaTime);
 	
-	mNextAttack -= deltaTime;
+	/*mNextAttack -= deltaTime;
 	if (mNextAttack <= 0.0f)
 	{
 		Enemy* e = GetGame()->GetNearestEnemy(GetPosition());
@@ -49,5 +56,5 @@ void Tower::UpdateActor(float deltaTime)
 			}
 		}
 		mNextAttack += AttackTime;
-	}
+	}*/
 }

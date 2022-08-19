@@ -23,6 +23,8 @@ public:
 	virtual void ProcessInput(const uint8_t* keyState) {}
 
 	int GetUpdateOrder() const { return mUpdateOrder; }
+    // Added GetActor to help AIState class
+    Actor* GetActor() const { return mOwner; }
 protected:
 	// Owning actor
 	class Actor* mOwner;

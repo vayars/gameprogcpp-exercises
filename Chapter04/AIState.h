@@ -38,6 +38,9 @@ public:
 
 	const char* GetName() const override
 	{ return "Patrol"; }
+    
+private:
+    const float AttackRange = 100.0f;
 };
 
 class AIDeath : public AIState
@@ -60,7 +63,9 @@ class AIAttack : public AIState
 public:
 	AIAttack(class AIComponent* owner)
 		:AIState(owner)
-	{ }
+	{
+        mNextAttack = AttackTime;
+    }
 
 	void Update(float deltaTime) override;
 	void OnEnter() override;
@@ -68,4 +73,8 @@ public:
 
 	const char* GetName() const override
 	{ return "Attack"; }
+private:
+    float mNextAttack;
+    const float AttackTime = 2.5f;
+    const float AttackRange = 100.0f;
 };

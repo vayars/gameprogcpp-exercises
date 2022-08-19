@@ -94,7 +94,7 @@ void Game::ProcessInput()
 							bool playerMoved = TryPlayerMove(&mBoardState, col);
 							if (playerMoved && !mBoardState.IsTerminal())
 							{
-								CPUMove(&mBoardState);
+                                CPUMove(&mBoardState, mAIComp);
 							}
 						}
 					}

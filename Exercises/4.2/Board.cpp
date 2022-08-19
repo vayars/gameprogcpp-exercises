@@ -8,6 +8,7 @@
 
 #include "Board.h"
 #include "Random.h"
+#include <SDL/SDL_Log.h>
 
 BoardState::BoardState()
 {
@@ -186,8 +187,257 @@ int BoardState::GetFourInARow() const
 
 float BoardState::CalculateHeuristic() const
 {
-	// TODO: You could change this to calculate an actual heuristic
-	return 0.0f;
+	// Check the maximum number of disks the AI and the player has in a row
+    float maxRed = 0.0f;
+    float maxYellow = 0.0f;
+    
+    // Check if there's a row with four in a row
+    for (int row = 0; row < 6; row++)
+    {
+        for (int col = 0; col < 4; col++)
+        {
+            if (mBoard[row][col] == BoardState::Yellow)
+            {
+                //SDL_Log("Checking Yellow");
+                // If we spot 4 in a row for the first time,
+                if (mBoard[row][col] == mBoard[row][col + 1] &&
+                    mBoard[row][col] == mBoard[row][col + 2] &&
+                    mBoard[row][col] == mBoard[row][col + 3] &&
+                    maxYellow < 4.0f)
+                {
+                    maxYellow = 4.0f;
+                }
+                // Else if we spot 3 in a row for the first time,
+                else if (mBoard[row][col] == mBoard[row][col + 1] &&
+                         mBoard[row][col] == mBoard[row][col + 2] &&
+                         maxYellow < 3.0f)
+                {
+                    maxYellow = 3.0f;
+                }
+                // Else if we spot 2 in a row for the first time,
+                else if (mBoard[row][col] == mBoard[row][col + 1] &&
+                    maxYellow < 2.0f)
+                {
+                    maxYellow = 2.0f;
+                }
+                else if (maxYellow < 1) {
+                    maxYellow = 1.0f;
+                }
+            }
+            
+            if (mBoard[row][col] == BoardState::Red)
+            {
+                //SDL_Log("Checking Red");
+                // If we spot 4 in a row for the first time,
+                if (mBoard[row][col] == mBoard[row][col + 1] &&
+                    mBoard[row][col] == mBoard[row][col + 2] &&
+                    mBoard[row][col] == mBoard[row][col + 3] &&
+                    maxRed < 4.0f)
+                {
+                    maxRed = 4.0f;
+                }
+                // Else if we spot 3 in a row for the first time,
+                else if (mBoard[row][col] == mBoard[row][col + 1] &&
+                         mBoard[row][col] == mBoard[row][col + 2] &&
+                         maxRed < 3.0f)
+                {
+                    maxRed = 3.0f;
+                }
+                // Else if we spot 2 in a row for the first time,
+                else if (mBoard[row][col] == mBoard[row][col + 1] &&
+                    maxRed < 2.0f)
+                {
+                    maxRed = 2.0f;
+                }
+                else if (maxRed < 1.0f) {
+                    maxRed = 1.0f;
+                }
+            }
+        }
+    }
+        
+    // Check if there's a column with four in a row
+    for (int col = 0; col < 7; col++)
+    {
+        for (int row = 0; row < 3; row++)
+        {
+            if (mBoard[row][col] == BoardState::Yellow)
+            {
+                // 4 in a row
+                if (mBoard[row][col] == mBoard[row + 1][col] &&
+                         mBoard[row][col] == mBoard[row + 2][col] &&
+                         mBoard[row][col] == mBoard[row + 3][col] &&
+                         maxYellow < 4.0f)
+                {
+                    maxYellow = 4.0f;
+                }
+                // 3 in a row
+                else if (mBoard[row][col] == mBoard[row + 1][col] &&
+                         mBoard[row][col] == mBoard[row + 2][col] &&
+                         maxYellow < 3.0f)
+                {
+                    maxYellow = 3.0f;
+                }
+                // 2 in a row
+                else if (mBoard[row][col] == mBoard[row + 1][col] &&
+                         maxYellow < 2.0f)
+                {
+                    maxYellow = 2.0f;
+                }
+                // Don't need to check for one since the rows would've caught it
+            }
+            else if (mBoard[row][col] == BoardState::Red)
+            {
+                // 4 in a row
+                if (mBoard[row][col] == mBoard[row + 1][col] &&
+                         mBoard[row][col] == mBoard[row + 2][col] &&
+                         mBoard[row][col] == mBoard[row + 3][col] &&
+                         maxRed < 4.0f)
+                {
+                    maxRed = 4.0f;
+                }
+                // 3 in a row
+                else if (mBoard[row][col] == mBoard[row + 1][col] &&
+                         mBoard[row][col] == mBoard[row + 2][col] &&
+                         maxRed < 3.0f)
+                {
+                    maxRed = 3.0f;
+                }
+                // 2 in a row
+                else if (mBoard[row][col] == mBoard[row + 1][col] &&
+                         maxRed < 2.0f)
+                {
+                    maxRed = 2.0f;
+                }
+                // Don't need to check for one since the rows would've caught it
+            }
+        }
+    }
+
+    // Check if there's a right diagonal four in a row
+    for (int col = 0; col < 4; col++)
+    {
+        for (int row = 0; row < 3; row++)
+        {
+            if (mBoard[row][col] == BoardState::Yellow)
+            {
+                // 4 in a row
+                if (mBoard[row][col] == mBoard[row + 1][col + 1] &&
+                    mBoard[row][col] == mBoard[row + 2][col + 2] &&
+                    mBoard[row][col] == mBoard[row + 3][col + 3] &&
+                    maxYellow < 4.0f)
+                {
+                    maxYellow = 4.0f;
+                }
+                // 3 in a row
+                else if (mBoard[row][col] == mBoard[row + 1][col + 1] &&
+                         mBoard[row][col] == mBoard[row + 2][col + 2] &&
+                         maxYellow < 3.0f)
+                {
+                    maxYellow = 3.0f;
+                }
+                // 2 in a row
+                else if (mBoard[row][col] == mBoard[row + 1][col + 1] &&
+                         maxYellow < 2.0f)
+                {
+                    maxYellow = 2.0f;
+                }
+            }
+            else if (mBoard[row][col] == BoardState::Red)
+            {
+                // 4 in a row
+                if (mBoard[row][col] == mBoard[row + 1][col + 1] &&
+                    mBoard[row][col] == mBoard[row + 2][col + 2] &&
+                    mBoard[row][col] == mBoard[row + 3][col + 3] &&
+                    maxRed < 4.0f)
+                {
+                    maxRed = 4.0f;
+                }
+                // 3 in a row
+                else if (mBoard[row][col] == mBoard[row + 1][col + 1] &&
+                         mBoard[row][col] == mBoard[row + 2][col + 2] &&
+                         maxRed < 3.0f)
+                {
+                    maxRed = 3.0f;
+                }
+                // 2 in a row
+                else if (mBoard[row][col] == mBoard[row + 1][col + 1] &&
+                         maxRed < 2.0f)
+                {
+                    maxRed = 2.0f;
+                }
+            }
+        }
+    }
+
+    // Check if there's a left diagonal for in a row
+    for (int col = 0; col < 4; col++)
+    {
+        for (int row = 3; row < 6; row++)
+        {
+            if (mBoard[row][col] == BoardState::Yellow)
+            {
+                // 4 in a row
+                if (mBoard[row][col] == mBoard[row - 1][col + 1] &&
+                    mBoard[row][col] == mBoard[row - 2][col + 2] &&
+                    mBoard[row][col] == mBoard[row - 3][col + 3] &&
+                    maxYellow < 4.0f)
+                {
+                    maxYellow = 4.0f;
+                }
+                // 3 in a row
+                else if (mBoard[row][col] == mBoard[row - 1][col + 1] &&
+                         mBoard[row][col] == mBoard[row - 2][col + 2] &&
+                         maxYellow < 3.0f)
+                {
+                    maxYellow = 3.0f;
+                }
+                // 2 in a row
+                else if (mBoard[row][col] == mBoard[row - 1][col + 1] &&
+                         maxYellow < 2.0f)
+                {
+                    maxYellow = 2.0f;
+                }
+            }
+            else if (mBoard[row][col] == BoardState::Red)
+            {
+                // 4 in a row
+                if (mBoard[row][col] == mBoard[row - 1][col + 1] &&
+                    mBoard[row][col] == mBoard[row - 2][col + 2] &&
+                    mBoard[row][col] == mBoard[row - 3][col + 3] &&
+                    maxRed < 4.0f)
+                {
+                    maxRed = 4.0f;
+                }
+                // 3 in a row
+                else if (mBoard[row][col] == mBoard[row - 1][col + 1] &&
+                         mBoard[row][col] == mBoard[row - 2][col + 2] &&
+                         maxRed < 3.0f)
+                {
+                    maxRed = 3.0f;
+                }
+                // 2 in a row
+                else if (mBoard[row][col] == mBoard[row - 1][col + 1] &&
+                         maxRed < 2.0f)
+                {
+                    maxRed = 2.0f;
+                }
+            }
+        }
+    }
+    
+    // Calculate heuristic
+    float score;
+    if (maxRed == 4.0f)
+    {
+        score = 1;
+    }
+    else
+    {
+        score = (maxRed - maxYellow) / 3;
+    }
+    SDL_Log("Heuristic: %f", score);
+    return score;
 }
 
 bool TryPlayerMove(BoardState* state, int column)
@@ -206,9 +456,11 @@ bool TryPlayerMove(BoardState* state, int column)
 	return false;
 }
 
-void CPUMove(BoardState* state)
+void CPUMove(BoardState* state, AIComponent aic)
 {
-	// For now, this just randomly picks one of the possible moves
+    *state = *aic.MinimaxDecide(state, 2);
+    
+    /*// For now, this just randomly picks one of the possible moves
 	std::vector<BoardState*> moves = state->GetPossibleMoves(BoardState::Red);
 
 	int index = Random::GetIntRange(0, moves.size() - 1);
@@ -219,5 +471,60 @@ void CPUMove(BoardState* state)
 	for (auto state : moves)
 	{
 		delete state;
-	}
+	}*/
 }
+
+AIComponent::AIComponent()
+{
+}
+
+float AIComponent::MaxPlayerLimit(const BoardState* state, int depth)
+{
+    // If we've reached max dpeth or the board is terminal:
+    if (depth == 0 || state->IsTerminal())
+    {
+        return state->GetScore();
+    }
+    // Else, find the subtree with the max value
+    float maxValue = -std::numeric_limits<float>::infinity();
+    for (const BoardState* child : state->GetPossibleMoves(state->Red))
+    {
+        maxValue = std::max(maxValue, MinPlayerLimit(child, depth-1));
+    }
+    return maxValue;
+}
+
+float AIComponent::MinPlayerLimit(const BoardState* state, int depth)
+{
+    // If we've reached the max depth or the board is terminal:
+    if (depth == 0 || state->IsTerminal())
+    {
+        return state->GetScore();
+    }
+    // Else, find the subtree with the min value
+    float minValue = std::numeric_limits<float>::infinity();
+    for (const BoardState* child : state->GetPossibleMoves(state->Yellow))
+    {
+        minValue = std::min(minValue, MaxPlayerLimit(child, depth-1));
+    }
+    return minValue;
+}
+
+const BoardState* AIComponent::MinimaxDecide(const BoardState* root, int depth)
+{
+    // Find the subtree with the maximum value and save the choice
+    const BoardState* choice = nullptr;
+    float maxValue = -std::numeric_limits<float>::infinity();
+    for (const BoardState* child : root->GetPossibleMoves(root->Red))
+    {
+        float v = MinPlayerLimit(child, depth);
+        if (v > maxValue)
+        {
+            maxValue = v;
+            choice = child;
+        }
+    }
+    
+    return choice;
+}
+

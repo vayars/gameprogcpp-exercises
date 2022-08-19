@@ -58,4 +58,5 @@ private:
 
 	// Game-specific
 	BoardState mBoardState;
+    AIComponent mAIComp;
 };

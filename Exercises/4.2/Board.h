@@ -25,8 +25,18 @@ protected:
 	float CalculateHeuristic() const;
 };
 
+class AIComponent
+{
+public:
+    AIComponent();
+    
+    float MaxPlayerLimit(const BoardState* state, int depth);
+    float MinPlayerLimit(const BoardState* state, int depth);
+    const BoardState* MinimaxDecide(const BoardState* root, int depth);
+};
+
 // Try to place the player's piece
 bool TryPlayerMove(class BoardState* state, int column);
 
 // Make the next CPU move
-void CPUMove(class BoardState* state);
+void CPUMove(class BoardState* state, class AIComponent aic);

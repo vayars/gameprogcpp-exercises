@@ -68,4 +68,12 @@ private:
 	// Game-specific
 	class Ship* mShip;
 	std::vector<class Asteroid*> mAsteroids;
+    
+    // Background color values
+    Vector3 mCurrent;
+    Vector3 mTarget;
+    Vector3 mIncrement;
+    
+    float mColorTime;
+    const float TargetTime = 5.0f;
 };

@@ -25,7 +25,6 @@ Game::Game()
 ,mIsRunning(true)
 ,mUpdatingActors(false)
 {
-	
 }
 
 bool Game::Initialize()
@@ -174,12 +173,39 @@ void Game::UpdateGame()
 	{
 		delete actor;
 	}
+    
+    // Update the background color
+    // If mCurrent has reached mTarget, pick a new color, update the increment,
+    // and reset the color timer
+    if (mColorTime <= 0.0f)
+    {
+        //SDL_Log("Changing Target");
+        mTarget.Set(Random::GetFloat(), Random::GetFloat(), Random::GetFloat());
+        
+        
+        float numFrames = TargetTime/deltaTime;
+        mColorTime = TargetTime;
+        
+        mIncrement.x = (mTarget.x-mCurrent.x) / numFrames;
+        mIncrement.y = (mTarget.y-mCurrent.y) / numFrames;
+        mIncrement.z = (mTarget.x-mCurrent.z) / numFrames;
+        
+        //SDL_Log("Adding Increment: %f, %f, %f", mIncrement.x, mIncrement.y, mIncrement.z);
+        //SDL_Log("Target: %f, %f, %f", mTarget.x, mTarget.y, mTarget.z);
+        //SDL_Log("Current: %f, %f, %f", mCurrent.x, mCurrent.y, mCurrent.z);
+    }
+    // Else, increment mCurrent
+    else
+    {
+        mCurrent += mIncrement;
+        mColorTime -= deltaTime;
+    }
 }
 
 void Game::GenerateOutput()
 {
 	// Set the clear color to grey
-	glClearColor(0.86f, 0.86f, 0.86f, 1.0f);
+	glClearColor(mCurrent.x, mCurrent.y, mCurrent.z, 1.0f);
 	// Clear the color buffer
 	glClear(GL_COLOR_BUFFER_BIT);
 	
@@ -244,6 +270,15 @@ void Game::LoadData()
 	{
 		new Asteroid(this);
 	}
+    
+    // Set the background color to black
+    mCurrent.Set(0.0f, 0.0f, 0.0f);
+    // Set the target color to black
+    mTarget.Set(0.0f, 0.0f, 0.0f);
+    // Set the increment to zero
+    mIncrement.Set(0.0f, 0.0f, 0.0f);
+    // Set the color timer so the BG starts changing color after 1 second
+    mColorTime = 1.0f;
 }
 
 void Game::UnloadData()

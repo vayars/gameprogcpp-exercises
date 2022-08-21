@@ -76,7 +76,8 @@ private:
 	class VertexArray* mSpriteVerts;
 
 	// Mesh shader
-	class Shader* mMeshShader;
+	//class Shader* mMeshShader;
+    std::unordered_map<std::string, class Shader*> mShaders;
 
 	// View/projection for 3D shaders
 	Matrix4 mView;

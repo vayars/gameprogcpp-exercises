@@ -19,7 +19,6 @@
 Renderer::Renderer(Game* game)
 	:mGame(game)
 	,mSpriteShader(nullptr)
-	,mMeshShader(nullptr)
 {
 }
 
@@ -90,8 +89,10 @@ void Renderer::Shutdown()
 	delete mSpriteVerts;
 	mSpriteShader->Unload();
 	delete mSpriteShader;
-	mMeshShader->Unload();
-	delete mMeshShader;
+    mShaders.at("BasicMesh")->Unload();
+    delete mShaders.at("BasicMesh");
+	mShaders.at("Phong")->Unload();
+	delete mShaders.at("Phong");
 	SDL_GL_DeleteContext(mContext);
 	SDL_DestroyWindow(mWindow);
 }
@@ -126,15 +127,34 @@ void Renderer::Draw()
 	// Enable depth buffering/disable alpha blend
 	glEnable(GL_DEPTH_TEST);
 	glDisable(GL_BLEND);
-	// Set the mesh shader active
-	mMeshShader->SetActive();
+    // Set the BasicMesh shader active
+    mShaders.at("BasicMesh")->SetActive();
+    // Update view-projection matrix
+    mShaders.at("BasicMesh")->SetMatrixUniform("uViewProj", mView * mProjection);
+    for (auto mc : mMeshComps)
+    {
+        //SDL_Log("%s", mc->GetShaderName().c_str());
+        if (mc->GetShaderName() == "BasicMesh")
+        {
+            //SDL_Log("Drawing MeshComponent");
+            mc->Draw(mShaders.at("BasicMesh"));
+        }
+    }
+    
+	// Set the Phong shader active
+    mShaders.at("Phong")->SetActive();
 	// Update view-projection matrix
-	mMeshShader->SetMatrixUniform("uViewProj", mView * mProjection);
+    mShaders.at("Phong")->SetMatrixUniform("uViewProj", mView * mProjection);
 	// Update lighting uniforms
-	SetLightUniforms(mMeshShader);
+	SetLightUniforms(mShaders.at("Phong"));
 	for (auto mc : mMeshComps)
 	{
-		mc->Draw(mMeshShader);
+        //SDL_Log("%s", mc->GetShaderName().c_str());
+        if (mc->GetShaderName() == "Phong")
+        {
+            //SDL_Log("Drawing MeshComponent");
+            mc->Draw(mShaders.at("Phong"));
+        }
 	}
 
 	// Draw all sprite components
@@ -257,19 +277,31 @@ bool Renderer::LoadShaders()
 	mSpriteShader->SetMatrixUniform("uViewProj", viewProj);
 
 	// Create basic mesh shader
-	mMeshShader = new Shader();
-	if (!mMeshShader->Load("Shaders/Phong.vert", "Shaders/Phong.frag"))
+    Shader* basicShader = new Shader();
+    if (!basicShader->Load("Shaders/BasicMesh.vert", "Shaders/BasicMesh.frag"))
+    {
+        return false;
+    }
+    // Create Phong mesh shader
+	Shader* phongShader = new Shader();
+	if (!phongShader->Load("Shaders/Phong.vert", "Shaders/Phong.frag"))
 	{
 		return false;
 	}
 
-	mMeshShader->SetActive();
+	basicShader->SetActive();
 	// Set the view-projection matrix
 	mView = Matrix4::CreateLookAt(Vector3::Zero, Vector3::UnitX, Vector3::UnitZ);
 	mProjection = Matrix4::CreatePerspectiveFOV(Math::ToRadians(70.0f),
 		mScreenWidth, mScreenHeight, 25.0f, 10000.0f);
-	mMeshShader->SetMatrixUniform("uViewProj", mView * mProjection);
-	return true;
+	basicShader->SetMatrixUniform("uViewProj", mView * mProjection);
+    mShaders.emplace("BasicMesh", basicShader);
+	
+    phongShader->SetActive();
+    phongShader->SetMatrixUniform("uViewProj", mView * mProjection);
+    mShaders.emplace("Phong", phongShader);
+    
+    return true;
 }
 
 void Renderer::CreateSpriteVerts()

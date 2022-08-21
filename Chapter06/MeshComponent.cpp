@@ -50,3 +50,8 @@ void MeshComponent::Draw(Shader* shader)
 		glDrawElements(GL_TRIANGLES, va->GetNumIndices(), GL_UNSIGNED_INT, nullptr);
 	}
 }
+
+std::string MeshComponent::GetShaderName()
+{
+    return mMesh->GetShaderName();
+}

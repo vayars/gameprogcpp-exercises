@@ -29,6 +29,7 @@ void CameraActor::UpdateActor(float deltaTime)
 
 	Matrix4 view = Matrix4::CreateLookAt(cameraPos, target, up);
 	GetGame()->GetRenderer()->SetViewMatrix(view);
+    //SDL_Log("Camera at %f, %f, %f", cameraPos.x, cameraPos.y, cameraPos.z);
 }
 
 void CameraActor::ActorInput(const uint8_t* keys)

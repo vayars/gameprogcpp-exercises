@@ -336,4 +336,28 @@ void Renderer::SetLightUniforms(Shader* shader)
 		mDirLight.mDiffuseColor);
 	shader->SetVectorUniform("uDirLight.mSpecColor",
 		mDirLight.mSpecColor);
+    // Point light 1
+    shader->SetVectorUniform("uPointLightArr[0].mPosition", mPointLightArr[0].mPosition);
+    shader->SetVectorUniform("uPointLightArr[0].mDiffuseColor", mPointLightArr[0].mDiffuseColor);
+    shader->SetVectorUniform("uPointLightArr[0].mSpecColor",
+        mPointLightArr[0].mSpecColor);
+    shader->SetFloatUniform("uPointLightArr[0].mRadius", mPointLightArr[0].mRadius);
+    // Point light 2
+    shader->SetVectorUniform("uPointLightArr[1].mPosition", mPointLightArr[1].mPosition);
+    shader->SetVectorUniform("uPointLightArr[1].mDiffuseColor", mPointLightArr[1].mDiffuseColor);
+    shader->SetVectorUniform("uPointLightArr[1].mSpecColor",
+        mPointLightArr[1].mSpecColor);
+    shader->SetFloatUniform("uPointLightArr[1].mRadius", mPointLightArr[1].mRadius);
+    // Point light 3
+    shader->SetVectorUniform("uPointLightArr[2].mPosition", mPointLightArr[2].mPosition);
+    shader->SetVectorUniform("uPointLightArr[2].mDiffuseColor", mPointLightArr[2].mDiffuseColor);
+    shader->SetVectorUniform("uPointLightArr[2].mSpecColor",
+        mPointLightArr[2].mSpecColor);
+    shader->SetFloatUniform("uPointLightArr[2].mRadius", mPointLightArr[2].mRadius);
+    // Point light 4
+    shader->SetVectorUniform("uPointLightArr[3].mPosition", mPointLightArr[3].mPosition);
+    shader->SetVectorUniform("uPointLightArr[3].mDiffuseColor", mPointLightArr[3].mDiffuseColor);
+    shader->SetVectorUniform("uPointLightArr[3].mSpecColor",
+        mPointLightArr[3].mSpecColor);
+    shader->SetFloatUniform("uPointLightArr[3].mRadius", mPointLightArr[3].mRadius);
 }

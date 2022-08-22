@@ -34,6 +34,19 @@ struct DirectionalLight
 	vec3 mSpecColor;
 };
 
+// Create a struct for point light
+struct PointLight
+{
+    // Position of light
+    vec3 mPosition;
+    // Diffuse color
+    vec3 mDiffuseColor;
+    // Specular color
+    vec3 mSpecColor;
+    // Radius of Inffluence
+    float mRadius;
+};
+
 // Uniforms for lighting
 // Camera position (in world space)
 uniform vec3 uCameraPos;
@@ -44,6 +57,8 @@ uniform vec3 uAmbientLight;
 
 // Directional Light
 uniform DirectionalLight uDirLight;
+// Array of  point lights
+uniform PointLight uPointLightArr[4];
 
 void main()
 {
@@ -59,12 +74,30 @@ void main()
 	// Compute phong reflection
 	vec3 Phong = uAmbientLight;
 	float NdotL = dot(N, L);
+    vec3 Diffuse = vec3(0.0,0.0,0.0);
+    vec3 Specular = vec3(0.0,0.0,0.0);
+    
+    // Check directional light
 	if (NdotL > 0)
 	{
-		vec3 Diffuse = uDirLight.mDiffuseColor * NdotL;
-		vec3 Specular = uDirLight.mSpecColor * pow(max(0.0, dot(R, V)), uSpecPower);
-		Phong += Diffuse + Specular;
+		Diffuse += uDirLight.mDiffuseColor * NdotL;
+		Specular += uDirLight.mSpecColor * pow(max(0.0, dot(R, V)), uSpecPower);
 	}
+    // Check point lights
+    for (int i = 0; i<uPointLightArr.length(); i++)
+    {
+        // If the pixel is within the radius of the point light
+        if (sqrt(pow((fragWorldPos.x-uPointLightArr[i].mPosition.x),2)+
+                 pow((fragWorldPos.y-uPointLightArr[i].mPosition.y),2)+
+                 pow((fragWorldPos.z-uPointLightArr[i].mPosition.z),2))
+            <= uPointLightArr[i].mRadius)
+        {
+            Diffuse += uPointLightArr[i].mDiffuseColor * dot(N, normalize(uPointLightArr[i].mPosition - fragWorldPos));
+            Specular += uPointLightArr[i].mSpecColor * pow(max(0.0, dot(R, V)), uSpecPower);
+        }
+    }
+    
+    Phong += Diffuse + Specular; // If Diffuse and/or Specular are 0.0,0.0,0.0, Phong remains unchanged
 
 	// Final color is texture color times phong light (alpha = 1)
     outColor = texture(uTexture, fragTexCoord) * vec4(Phong, 1.0f);

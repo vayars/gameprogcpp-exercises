@@ -23,6 +23,18 @@ struct DirectionalLight
 	Vector3 mSpecColor;
 };
 
+struct PointLight
+{
+    // Position of light
+    Vector3 mPosition;
+    // Diffuse color
+    Vector3 mDiffuseColor;
+    // Specular color
+    Vector3 mSpecColor;
+    // Radius of Inffluence
+    float mRadius;
+};
+
 class Renderer
 {
 public:
@@ -48,6 +60,7 @@ public:
 
 	void SetAmbientLight(const Vector3& ambient) { mAmbientLight = ambient; }
 	DirectionalLight& GetDirectionalLight() { return mDirLight; }
+    PointLight* GetPointLightArr() { return mPointLightArr; }
 
 	float GetScreenWidth() const { return mScreenWidth; }
 	float GetScreenHeight() const { return mScreenHeight; }
@@ -89,6 +102,7 @@ private:
 	// Lighting data
 	Vector3 mAmbientLight;
 	DirectionalLight mDirLight;
+    PointLight mPointLightArr [4];
 
 	// Window
 	SDL_Window* mWindow;

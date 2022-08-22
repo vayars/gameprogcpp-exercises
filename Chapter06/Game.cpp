@@ -193,10 +193,36 @@ void Game::LoadData()
 
 	// Setup lights
 	mRenderer->SetAmbientLight(Vector3(0.2f, 0.2f, 0.2f));
+    
 	DirectionalLight& dir = mRenderer->GetDirectionalLight();
 	dir.mDirection = Vector3(0.0f, -0.707f, -0.707f);
 	dir.mDiffuseColor = Vector3(0.78f, 0.88f, 1.0f);
 	dir.mSpecColor = Vector3(0.8f, 0.8f, 0.8f);
+    
+    PointLight* pointOne = mRenderer->GetPointLightArr();
+    // Red
+    pointOne[0].mPosition = Vector3(450.0f, 75.0f, 100.0f);
+    pointOne[0].mDiffuseColor = Vector3(1.0f, 0.0f, 0.0f);
+    pointOne[0].mSpecColor = Vector3(1.0f, 0.0f, 0.0f);
+    pointOne[0].mRadius = 500.0f;
+    
+    // Green
+    pointOne[1].mPosition = Vector3(70.0f, -250.0f, 50.0f);
+    pointOne[1].mDiffuseColor = Vector3(0.0f, 1.0f, 0.0f);
+    pointOne[1].mSpecColor = Vector3(0.0f, 1.0f, 0.0f);
+    pointOne[1].mRadius = 200.0f;
+    
+    // Blue
+    pointOne[2].mPosition = Vector3(0.0f, 0.0f, 0.0f);
+    pointOne[2].mDiffuseColor = Vector3(0.0f, 0.0f, 1.0f);
+    pointOne[2].mSpecColor = Vector3(0.0f, 0.0f, 1.0f);
+    pointOne[2].mRadius = 200.0f;
+    
+    // White
+    pointOne[3].mPosition = Vector3(260.0f, -215.0f, 0.0f);
+    pointOne[3].mDiffuseColor = Vector3(1.0f, 1.0f, 1.0f);
+    pointOne[3].mSpecColor = Vector3(1.0f, 1.0f, 1.0f);
+    pointOne[3].mRadius = 200.0f;
 
 	// Camera actor
 	mCameraActor = new CameraActor(this);
@@ -272,3 +298,4 @@ void Game::RemoveActor(Actor* actor)
 		mActors.pop_back();
 	}
 }
+

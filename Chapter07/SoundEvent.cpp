@@ -9,6 +9,7 @@
 #include "SoundEvent.h"
 #include "AudioSystem.h"
 #include <fmod_studio.hpp>
+#include <SDL/SDL_log.h>
 
 SoundEvent::SoundEvent(class AudioSystem* system, unsigned int id)
 	:mSystem(system)
@@ -159,7 +160,7 @@ namespace
 	}
 }
 
-void SoundEvent::Set3DAttributes(const Matrix4& worldTrans)
+void SoundEvent::Set3DAttributes(const Matrix4& worldTrans, Vector3 prevPos)
 {
 	auto event = mSystem ? mSystem->GetEventInstance(mID) : nullptr;
 	if (event)
@@ -172,7 +173,9 @@ void SoundEvent::Set3DAttributes(const Matrix4& worldTrans)
 		// Third row is up
 		attr.up = VecToFMOD(worldTrans.GetZAxis());
 		// Set velocity to zero (fix if using Doppler effect)
-		attr.velocity = { 0.0f, 0.0f, 0.0f };
+        Vector3 vel = (worldTrans.GetTranslation()-prevPos)*20;
+        attr.velocity = VecToFMOD(vel);
+        //SDL_Log("Object velocity: x=%f, y=%f, z=%f", vel.x, vel.y, vel.z);
 		event->set3DAttributes(&attr);
 	}
 }

@@ -38,7 +38,9 @@ public:
 
 	// Getters/setters
 	const Vector3& GetPosition() const { return mPosition; }
-	void SetPosition(const Vector3& pos) { mPosition = pos; mRecomputeWorldTransform = true; }
+    void SetPosition(const Vector3& pos) { mLastPos = mPosition;
+        mPosition = pos;
+        mRecomputeWorldTransform = true; }
 	float GetScale() const { return mScale; }
 	void SetScale(float scale) { mScale = scale;  mRecomputeWorldTransform = true; }
 	const Quaternion& GetRotation() const { return mRotation; }
@@ -53,7 +55,16 @@ public:
 	void SetState(State state) { mState = state; }
 
 	class Game* GetGame() { return mGame; }
-
+    
+    const Vector3 GetLastPos() const { return mLastPos; }
+    void SetLastPos() { mLastPos = mPosition; }
+    bool LastEqualsCurrent() {
+        if (mLastPos.x == mPosition.x && mLastPos.y == mPosition.y && mLastPos.z == mPosition.z)
+        {
+            return true;
+        }
+        return false;
+    }
 
 	// Add/remove components
 	void AddComponent(class Component* component);
@@ -68,6 +79,7 @@ private:
 	Quaternion mRotation;
 	float mScale;
 	bool mRecomputeWorldTransform;
+    Vector3 mLastPos;
 
 	std::vector<class Component*> mComponents;
 	class Game* mGame;

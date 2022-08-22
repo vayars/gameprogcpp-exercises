@@ -50,6 +50,7 @@ private:
 
 	// Game-specific code
 	class CameraActor* mCameraActor;
+    class FireActor* mFireActor;
 	SoundEvent mMusicEvent;
 	SoundEvent mReverbSnap;
 };

@@ -37,4 +37,8 @@ void MoveComponent::Update(float deltaTime)
 		pos += mOwner->GetForward() * mForwardSpeed * deltaTime;		
 		mOwner->SetPosition(pos);
 	}
+    // If not moving BUT last position not updated, update last position
+    else if (!mOwner->LastEqualsCurrent()){
+        mOwner->SetLastPos();
+    }
 }

@@ -20,10 +20,17 @@ public:
 
 	void Update(float deltaTime) override;
 	void OnUpdateWorldTransform() override;
+    
+    Matrix4 ComputeVirtualWorldTransform();
+    
+    Vector3 GetVirtualPos() const { return mVirtualPosition; }
 
 	SoundEvent PlayEvent(const std::string& name);
 	void StopAllEvents();
 private:
 	std::vector<SoundEvent> mEvents2D;
 	std::vector<SoundEvent> mEvents3D;
+    Vector3 mVirtualPosition;
+    Matrix4 mVirtualWorldTransform;
+    Matrix4 mLastVirtualWorldTransform;
 };

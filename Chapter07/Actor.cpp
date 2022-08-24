@@ -20,6 +20,10 @@ Actor::Actor(Game* game)
 	,mRecomputeWorldTransform(true)
 {
 	mGame->AddActor(this);
+    // Set a base world transform so mLastWorldTransform is set properly
+    mWorldTransform = Matrix4::CreateScale(mScale);
+    mWorldTransform *= Matrix4::CreateFromQuaternion(mRotation);
+    mWorldTransform *= Matrix4::CreateTranslation(mPosition);
 }
 
 Actor::~Actor()
@@ -81,6 +85,7 @@ void Actor::ComputeWorldTransform()
 	if (mRecomputeWorldTransform)
 	{
 		mRecomputeWorldTransform = false;
+        mLastWorldTransform = mWorldTransform;
 		// Scale, then rotate, then translate
 		mWorldTransform = Matrix4::CreateScale(mScale);
 		mWorldTransform *= Matrix4::CreateFromQuaternion(mRotation);

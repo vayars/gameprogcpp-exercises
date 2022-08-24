@@ -9,6 +9,7 @@
 #pragma once
 #include "Actor.h"
 #include "MoveComponent.h"
+#include "AudioComponent.h"
 
 class FireActor : public Actor
 {
@@ -19,5 +20,6 @@ public:
     
 private:
     MoveComponent* mMoveComp;
+    AudioComponent* mAudioComp;
     float mChangeDirection;
 };

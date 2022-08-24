@@ -299,8 +299,6 @@ void Game::LoadData()
     mFireActor->SetScale(1.0f);
     mc = new MeshComponent(mFireActor);
     mc->SetMesh(mRenderer->GetMesh("Assets/Sphere.gpmesh"));
-    AudioComponent* ac = new AudioComponent(mFireActor);
-    ac->PlayEvent("event:/FireLoop");
 
 	// Start music
 	mMusicEvent = mAudioSystem->PlayEvent("event:/Music");
@@ -367,4 +365,17 @@ void Game::RemoveActor(Actor* actor)
 		std::iter_swap(iter, mActors.end() - 1);
 		mActors.pop_back();
 	}
+}
+
+Vector3 Game::ComputeVirtualPos(const Vector3& soundPos, Vector3& virtualPos)
+{
+    Vector3 playerPos = mCameraActor->GetPosition();
+    Vector3 cameraPos = mCameraActor->GetCameraPosition();
+    
+    Vector3 PtoS = soundPos - playerPos;
+    Vector3 CtoS = soundPos - cameraPos;
+    
+    virtualPos = (PtoS.Length() * CtoS.Normalize(CtoS)) + cameraPos;
+    
+    return virtualPos;
 }

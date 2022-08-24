@@ -10,6 +10,7 @@
 #include "MoveComponent.h"
 #include "AudioComponent.h"
 #include "MeshComponent.h"
+#include <SDL/SDL_log.h>
 
 FireActor::FireActor(Game* game)
     :Actor(game)
@@ -18,6 +19,8 @@ FireActor::FireActor(Game* game)
     
     mMoveComp = new MoveComponent(this);
     mMoveComp->SetForwardSpeed(200.0f);
+    mAudioComp = new AudioComponent(this);
+    mAudioComp->PlayEvent("event:/FireLoop");
 }
 
 void FireActor::UpdateActor(float deltaTime)
@@ -31,4 +34,6 @@ void FireActor::UpdateActor(float deltaTime)
         mChangeDirection = 5.0f;
     }
     mChangeDirection -= deltaTime;
+    //SDL_Log("Sphere Pos: %f, %f, %f", GetPosition().x, GetPosition().y, GetPosition().z);
+    //SDL_Log("Sphere Virtual Pos: %f, %f, %f", mAudioComp->GetVirtualPos().x, mAudioComp->GetVirtualPos().y, mAudioComp->GetVirtualPos().z);
 }

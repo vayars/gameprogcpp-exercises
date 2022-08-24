@@ -57,14 +57,30 @@ void AudioComponent::Update(float deltaTime)
 void AudioComponent::OnUpdateWorldTransform()
 {
 	// Update 3D events' world transforms
-	Matrix4 world = mOwner->GetWorldTransform();
+	//Matrix4 world = mOwner->GetWorldTransform();
+    // Replace ^^ with the Audio Comp Virtual World member variable
+    ComputeVirtualWorldTransform();
 	for (auto& event : mEvents3D)
 	{
 		if (event.IsValid())
 		{
-			event.Set3DAttributes(world, mOwner->GetLastPos());
+			event.Set3DAttributes(mVirtualWorldTransform, mLastVirtualWorldTransform);
 		}
 	}
+}
+
+Matrix4 AudioComponent::ComputeVirtualWorldTransform()
+{
+    // Set the current virtual world transform to the last one
+    mLastVirtualWorldTransform = mVirtualWorldTransform;
+    // Calculate the virtual position
+    mVirtualPosition = mOwner->GetGame()->ComputeVirtualPos(mOwner->GetPosition(), mVirtualPosition);
+    // Calculate the new virtual world transform
+    mVirtualWorldTransform = Matrix4::CreateScale(mOwner->GetScale());
+    mVirtualWorldTransform *= Matrix4::CreateFromQuaternion(mOwner->GetRotation());
+    mVirtualWorldTransform *= Matrix4::CreateTranslation(mVirtualPosition);
+    
+    return mVirtualWorldTransform;
 }
 
 SoundEvent AudioComponent::PlayEvent(const std::string& name)
@@ -75,7 +91,9 @@ SoundEvent AudioComponent::PlayEvent(const std::string& name)
 	{
 		mEvents3D.emplace_back(e);
 		// Set initial 3D attributes
-		e.Set3DAttributes(mOwner->GetWorldTransform(),mOwner->GetLastPos());
+        // Replace with virtual world and last virtual world
+		e.Set3DAttributes(mVirtualWorldTransform,
+                          mLastVirtualWorldTransform);
 	}
 	else
 	{

@@ -278,7 +278,7 @@ namespace
 	}
 }
 
-void AudioSystem::SetListener(const Matrix4& viewMatrix, Vector3 prevPos)
+void AudioSystem::SetListener(const Matrix4& viewMatrix, Vector3& prevPos)
 {
 	// Invert the view matrix to get the correct vectors
 	Matrix4 invView = viewMatrix;

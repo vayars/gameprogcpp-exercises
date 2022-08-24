@@ -27,6 +27,8 @@ public:
 
 	class Renderer* GetRenderer() { return mRenderer; }
 	class AudioSystem* GetAudioSystem() { return mAudioSystem; }
+    
+    Vector3 ComputeVirtualPos(const Vector3& soundPos, Vector3& virtualPos);
 private:
 	void ProcessInput();
 	void HandleKeyPress(int key);

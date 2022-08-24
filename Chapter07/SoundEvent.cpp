@@ -160,7 +160,7 @@ namespace
 	}
 }
 
-void SoundEvent::Set3DAttributes(const Matrix4& worldTrans, Vector3 prevPos)
+void SoundEvent::Set3DAttributes(const Matrix4& worldTrans, const Matrix4& lastWorldTrans)
 {
 	auto event = mSystem ? mSystem->GetEventInstance(mID) : nullptr;
 	if (event)
@@ -173,7 +173,7 @@ void SoundEvent::Set3DAttributes(const Matrix4& worldTrans, Vector3 prevPos)
 		// Third row is up
 		attr.up = VecToFMOD(worldTrans.GetZAxis());
 		// Set velocity to zero (fix if using Doppler effect)
-        Vector3 vel = (worldTrans.GetTranslation()-prevPos)*20;
+        Vector3 vel = (worldTrans.GetTranslation()-lastWorldTrans.GetTranslation())*20;
         attr.velocity = VecToFMOD(vel);
         //SDL_Log("Object velocity: x=%f, y=%f, z=%f", vel.x, vel.y, vel.z);
 		event->set3DAttributes(&attr);

@@ -73,6 +73,11 @@ ButtonState MouseState::GetButtonState(int button) const
 	}
 }
 
+// Empty costructor for vector<ControllerState>
+ControllerState::ControllerState()
+{
+}
+
 bool ControllerState::GetButtonValue(SDL_GameControllerButton button) const
 {
 	return mCurrButtons[button] == 1;
@@ -118,14 +123,40 @@ bool InputSystem::Initialize()
 	mState.Mouse.mPrevButtons = 0;
 
 	// Get the connected controller, if it exists
-	mController = SDL_GameControllerOpen(0);
+	//mController = SDL_GameControllerOpen(0);
 	// Initialize controller state
-	mState.Controller.mIsConnected = (mController != nullptr);
+	/*
+    mState.Controller.mIsConnected = (mController != nullptr);
 	memset(mState.Controller.mCurrButtons, 0,
 		SDL_CONTROLLER_BUTTON_MAX);
 	memset(mState.Controller.mPrevButtons, 0,
 		SDL_CONTROLLER_BUTTON_MAX);
-
+     */
+    
+    mNumControllers = 0;
+    // Get a max of 4 open controllers
+     for (int i = 0; i < SDL_NumJoysticks(); ++i)
+    {
+        // Test if the joystick is a controller
+        if (SDL_IsGameController(i))
+        {
+            if (mNumControllers < 3)
+            {
+                // Open the conbtroller for use
+                SDL_GameController* controller = SDL_GameControllerOpen(i);
+                // Add to the vector of controllers and the controller states
+                mControllers.emplace_back(controller);
+                mState.Controllers.emplace_back();
+                // Initialize the controller
+                mState.Controllers.at(mNumControllers).mIsConnected =
+                    (controller != nullptr);
+                memset(mState.Controllers.at(mNumControllers).mCurrButtons, 0, SDL_CONTROLLER_BUTTON_MAX);
+                memset(mState.Controllers.at(mNumControllers).mPrevButtons, 0, SDL_CONTROLLER_BUTTON_MAX);
+                mNumControllers += 1;
+                //SDL_Log("Controller number %d initialized.", mNumControllers);
+            }
+        }
+    }
 	return true;
 }
 
@@ -146,10 +177,13 @@ void InputSystem::PrepareForUpdate()
 	mState.Mouse.mIsRelative = false;
 	mState.Mouse.mScrollWheel = Vector2::Zero;
 
-	// Controller
-	memcpy(mState.Controller.mPrevButtons,
-		mState.Controller.mCurrButtons,
-		SDL_CONTROLLER_BUTTON_MAX);
+	// Controllers
+	for (auto controller : mState.Controllers)
+    {
+        memcpy(controller.mPrevButtons,
+            controller.mCurrButtons,
+            SDL_CONTROLLER_BUTTON_MAX);
+    }
 }
 
 void InputSystem::Update()
@@ -171,47 +205,106 @@ void InputSystem::Update()
 	mState.Mouse.mMousePos.y = static_cast<float>(y);
 
 	// Controller
-	// Buttons
-	for (int i = 0; i < SDL_CONTROLLER_BUTTON_MAX; i++)
-	{
-		mState.Controller.mCurrButtons[i] =
-			SDL_GameControllerGetButton(mController, 
-				SDL_GameControllerButton(i));
-	}
+    for (int index = 0; index < mNumControllers; index++)
+    {
+        // Buttons
+        for (int i = 0; i < SDL_CONTROLLER_BUTTON_MAX; i++)
+        {
+            mState.Controllers.at(index).mCurrButtons[i] =
+                SDL_GameControllerGetButton(mControllers.at(index),
+                    SDL_GameControllerButton(i));
+        }
 
-	// Triggers
-	mState.Controller.mLeftTrigger =
-		Filter1D(SDL_GameControllerGetAxis(mController,
-			SDL_CONTROLLER_AXIS_TRIGGERLEFT));
-	mState.Controller.mRightTrigger =
-		Filter1D(SDL_GameControllerGetAxis(mController,
-			SDL_CONTROLLER_AXIS_TRIGGERRIGHT));
+        // Triggers
+        mState.Controllers.at(index).mLeftTrigger =
+            Filter1D(SDL_GameControllerGetAxis(mControllers.at(index),
+                SDL_CONTROLLER_AXIS_TRIGGERLEFT));
+        mState.Controllers.at(index).mRightTrigger =
+            Filter1D(SDL_GameControllerGetAxis(mControllers.at(index),
+                SDL_CONTROLLER_AXIS_TRIGGERRIGHT));
 
-	// Sticks
-	x = SDL_GameControllerGetAxis(mController,
-		SDL_CONTROLLER_AXIS_LEFTX);
-	y = -SDL_GameControllerGetAxis(mController,
-		SDL_CONTROLLER_AXIS_LEFTY);
-	mState.Controller.mLeftStick = Filter2D(x, y);
+        // Sticks
+        x = SDL_GameControllerGetAxis(mControllers.at(index),
+            SDL_CONTROLLER_AXIS_LEFTX);
+        y = -SDL_GameControllerGetAxis(mControllers.at(index),
+            SDL_CONTROLLER_AXIS_LEFTY);
+        mState.Controllers.at(index).mLeftStick = Filter2D(x, y);
 
-	x = SDL_GameControllerGetAxis(mController,
-		SDL_CONTROLLER_AXIS_RIGHTX);
-	y = -SDL_GameControllerGetAxis(mController,
-		SDL_CONTROLLER_AXIS_RIGHTY);
-	mState.Controller.mRightStick = Filter2D(x, y);
+        x = SDL_GameControllerGetAxis(mControllers.at(index),
+            SDL_CONTROLLER_AXIS_RIGHTX);
+        y = -SDL_GameControllerGetAxis(mControllers.at(index),
+            SDL_CONTROLLER_AXIS_RIGHTY);
+        mState.Controllers.at(index).mRightStick = Filter2D(x, y);
+    }
 }
 
 void InputSystem::ProcessEvent(SDL_Event& event)
 {
 	switch (event.type)
 	{
-	case SDL_MOUSEWHEEL:
-		mState.Mouse.mScrollWheel = Vector2(
-			static_cast<float>(event.wheel.x),
-			static_cast<float>(event.wheel.y));
-		break;
-	default:
-		break;
+        case SDL_MOUSEWHEEL:
+            mState.Mouse.mScrollWheel = Vector2(
+                static_cast<float>(event.wheel.x),
+                static_cast<float>(event.wheel.y));
+            break;
+        case SDL_CONTROLLERDEVICEADDED:
+        {
+            //SDL_Log("Controller detected.");
+            if (mNumControllers < 3)
+            {
+                // Open the conbtroller for use
+                SDL_GameController* controller = SDL_GameControllerOpen(event.cdevice.which);
+                // Check if the controller already exists
+                auto iter = std::find(mControllers.begin(), mControllers.end(), controller);
+                if (iter != mControllers.end())
+                {
+                    // If it already exists, close the duplicate
+                    SDL_GameControllerClose(controller);
+                    //SDL_Log("Duplicate controller detected; no controller added.");
+                }
+                else
+                {
+                    // Add to the vector of controllers and the controller states
+                    mControllers.emplace_back(controller);
+                    mState.Controllers.emplace_back();
+                    // Initialize the controller
+                    mState.Controllers.at(mNumControllers).mIsConnected =
+                        (controller != nullptr);
+                    memset(mState.Controllers.at(mNumControllers).mCurrButtons, 0, SDL_CONTROLLER_BUTTON_MAX);
+                    memset(mState.Controllers.at(mNumControllers).mPrevButtons, 0, SDL_CONTROLLER_BUTTON_MAX);
+                    mNumControllers += 1;
+                    //SDL_Log("Controller successfully added at index %d.", mNumControllers);
+                }
+            }
+            break;
+        }
+        case SDL_CONTROLLERDEVICEREMOVED:
+        {
+            //SDL_Log("Controller lost.");
+            Sint32 id = event.cdevice.which;
+            for (int i = 0; i < mNumControllers; i++)
+            {
+                // Get the instance ID of the game controller
+                SDL_Joystick* joystick = SDL_GameControllerGetJoystick(mControllers.at(i));
+                SDL_JoystickID joyID = SDL_JoystickInstanceID(joystick);
+                // If the ID matches the one that was removed,
+                if (id == joyID)
+                {
+                    // Close the controller
+                    SDL_GameControllerClose(mControllers.at(i));
+                    // Remove the SDL_GameController* from mControllers
+                    mControllers.erase(mControllers.begin() + i);
+                    // Remove the ControllerState from mState.Controllers
+                    mState.Controllers.erase(mState.Controllers.begin() + i);
+                    mNumControllers -= 1;
+                    //SDL_Log("Controller successfully removed.");
+                    break;
+                }
+            }
+            break;
+        }
+        default:
+            break;
 	}
 }
 

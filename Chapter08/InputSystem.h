@@ -10,6 +10,8 @@
 #include <SDL/SDL_scancode.h>
 #include <SDL/SDL_gamecontroller.h>
 #include <SDL/SDL_mouse.h>
+#include <vector>
+#include <unordered_map>
 #include "Math.h"
 
 // The different button states
@@ -67,6 +69,9 @@ class ControllerState
 {
 public:
 	friend class InputSystem;
+    
+    // Constructor for the vector<ControllerState>
+    ControllerState();
 
 	// For buttons
 	bool GetButtonValue(SDL_GameControllerButton button) const;
@@ -97,7 +102,7 @@ struct InputState
 {
 	KeyboardState Keyboard;
 	MouseState Mouse;
-	ControllerState Controller;
+	std::vector<ControllerState> Controllers;
 };
 
 class InputSystem
@@ -120,5 +125,6 @@ private:
 	float Filter1D(int input);
 	Vector2 Filter2D(int inputX, int inputY);
 	InputState mState;
-	SDL_GameController* mController;
+	std::vector<SDL_GameController*> mControllers;
+    int mNumControllers;
 };
